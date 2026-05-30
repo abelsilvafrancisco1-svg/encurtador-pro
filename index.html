@@ -3,38 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OK NEWS DIGITAL</title>
+    <title>OK NEWS DIGITAL - Pro</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 10px; }
+        body { font-family: sans-serif; background: #121212; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
         .box { background: #1e1e1e; padding: 25px; border-radius: 15px; text-align: center; width: 100%; max-width: 400px; }
-        .btn { display: block; width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; color: white; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; color: white; }
         .btn-inscreva { background: #ff0000; }
         .btn-encurtar { background: #28a745; }
         .btn-social { background: #444; }
-        .btn-social:hover { background: #555; }
         #area-encurtador { display: none; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #666; background: #333; color: white; box-sizing: border-box; }
-        h1 { font-size: 1.4rem; margin-bottom: 10px; }
-        h4 { margin-top: 20px; color: #aaa; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; }
+        h1 { font-size: 1.5rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="box">
+    <div class="box" id="container-principal">
         <div id="tela-inicial">
             <h1>Bem-vindo ao Encurtador de Link Pro</h1>
-            <p>Inscreva-se no canal para desbloquear a ferramenta:</p>
-            <a href="https://www.youtube.com/channel/UCv2t0iZf9VogFjqUG9YawCg?sub_confirmation=1" 
-               target="_blank" class="btn btn-inscreva" onclick="liberarAgora()">INSCREVER-SE NO CANAL</a>
+            <p>Clique abaixo para se inscrever e liberar o encurtador:</p>
+            
+            <a href="https://www.youtube.com/@OKNEWSDIGITAL?sub_confirmation=1" 
+               target="_blank" 
+               class="btn btn-inscreva" 
+               onclick="liberarAcesso()">INSCREVER-SE NO CANAL</a>
         </div>
 
         <div id="area-encurtador">
-            <h3>Encurtador de Links</h3>
-            <input type="text" id="linkInput" placeholder="Cole o link aqui...">
+            <h3>Encurtador de Link Pro</h3>
+            <input type="text" id="linkInput" placeholder="Cole o seu link aqui...">
             <button class="btn btn-encurtar" onclick="encurtar()">GERAR LINK CURTO</button>
             <p id="resultado"></p>
 
-            <h4>Geradores de Link das Redes</h4>
+            <h4>Acesso Rápido</h4>
             <a href="https://wa.link/" target="_blank" class="btn btn-social">WhatsApp</a>
             <a href="https://instabio.cc/" target="_blank" class="btn btn-social">Instagram</a>
             <a href="https://tiktok.com/link-in-bio" target="_blank" class="btn btn-social">TikTok</a>
@@ -44,7 +45,8 @@
     </div>
 
     <script>
-        function liberarAgora() {
+        function liberarAcesso() {
+            // Esconde a tela de inscrição e mostra o encurtador
             document.getElementById('tela-inicial').style.display = 'none';
             document.getElementById('area-encurtador').style.display = 'block';
         }
@@ -54,7 +56,7 @@
             if(url) {
                 const finalUrl = "https://tinyurl.com/api-create.php?url=" + encodeURIComponent(url);
                 fetch(finalUrl).then(res => res.text()).then(data => {
-                    document.getElementById('resultado').innerHTML = "Link curto: <br><strong style='color:#28a745'>" + data + "</strong>";
+                    document.getElementById('resultado').innerHTML = "Link curto: <br><strong>" + data + "</strong>";
                 });
             }
         }
