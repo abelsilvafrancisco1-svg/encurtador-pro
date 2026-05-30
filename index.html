@@ -3,49 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Links Pro</title>
+    <title>OK NEWS DIGITAL - Downloader</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+        body { font-family: sans-serif; background: #0f0f0f; color: white; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: #1e1e1e; padding: 20px; border-radius: 15px; text-align: center; width: 100%; max-width: 400px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; box-sizing: border-box; }
+        button { background: #ff0000; color: white; border: none; padding: 12px 20px; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; }
         .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { background: #ff0000; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
-        .btn-link { background: #007bff; display: block; margin-top: 10px; padding: 12px; color: white; text-decoration: none; border-radius: 5px; }
+        .btn-download { background: #28a745; display: block; margin-top: 20px; padding: 15px; color: white; text-decoration: none; border-radius: 5px; font-size: 18px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="tela-bloqueio" class="container">
-        <h2>Acesso Premium</h2>
-        <p>Para usar o encurtador, confirme sua inscrição no canal oficial:</p>
+        <h2>OK NEWS DIGITAL</h2>
+        <p>Para liberar o baixador de vídeos, inscreva-se no canal:</p>
         <a href="https://www.youtube.com/channel/UCv2t0iZf9VogFjqUG9YawCg?sub_confirmation=1" 
-           target="_blank" class="btn-link" onclick="liberarAcesso()">INSCREVER-SE E LIBERAR</a>
+           target="_blank" class="btn-download" onclick="liberarAcesso()">INSCREVER-SE E LIBERAR</a>
     </div>
 
     <div id="conteudo-secreto" class="container hidden">
-        <h2>Encurtador de Links</h2>
-        <input type="text" id="urlInput" placeholder="Cole sua URL longa aqui...">
-        <button onclick="encurtar()">Gerar Link Curto</button>
-        <p id="resultado" style="margin-top:20px; font-weight:bold;"></p>
+        <h2>Busca e Download</h2>
+        <input type="text" id="urlInput" placeholder="Cole o link do vídeo aqui...">
+        <button onclick="buscar()">CARREGAR VÍDEO</button>
+        <div id="area-video" style="margin-top:20px;"></div>
+        <a id="link-baixar" href="#" class="btn-download hidden" target="_blank">BAIXAR ESTE VÍDEO</a>
     </div>
 
     <script>
         function liberarAcesso() {
-            // Pequeno delay para a pessoa clicar no YouTube
             setTimeout(() => {
                 document.getElementById('tela-bloqueio').style.display = 'none';
                 document.getElementById('conteudo-secreto').style.display = 'block';
-            }, 2000);
+            }, 3000);
         }
 
-        function encurtar() {
+        function buscar() {
             const url = document.getElementById('urlInput').value;
-            if(url.length > 5) {
-                // Simula um encurtador gerando um link aleatório
-                const randomId = Math.random().toString(36).substring(7);
-                document.getElementById('resultado').innerText = "Link Gerado: bit.ly/" + randomId;
+            if(url.length > 10) {
+                const btn = document.getElementById('link-baixar');
+                btn.href = "https://snapsave.io/pt1/search?url=" + encodeURIComponent(url);
+                btn.classList.remove('hidden');
+                alert("Vídeo pronto! Clique no botão verde abaixo para baixar.");
             } else {
-                alert("Por favor, cole uma URL válida.");
+                alert("Cole um link válido do YouTube.");
             }
         }
     </script>
