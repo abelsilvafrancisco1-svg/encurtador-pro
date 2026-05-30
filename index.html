@@ -1,251 +1,298 @@
+
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Disparo de SMS em Massa</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f4f8;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 700px;
-      width: 100%;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
-    }
-    h1 { color: #1a73e8; font-size: 24px; margin-bottom: 8px; }
-    p.subtitle { color: #666; font-size: 14px; margin-bottom: 28px; }
-    label { display: block; font-weight: 600; color: #333; margin-bottom: 6px; font-size: 14px; }
-    input, textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-bottom: 20px;
-      font-family: inherit;
-    }
-    input:focus, textarea:focus { outline: none; border-color: #1a73e8; }
-    textarea { resize: vertical; min-height: 100px; }
-    .numeros-box {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-bottom: 8px;
-      min-height: 120px;
-      font-family: monospace;
-      resize: vertical;
-    }
-    .info { font-size: 12px; color: #888; margin-bottom: 20px; }
-    .contador { font-size: 13px; color: #1a73e8; font-weight: 600; margin-bottom: 20px; }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      background: #1a73e8;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn:hover { background: #1558b0; }
-    .btn:disabled { background: #aaa; cursor: not-allowed; }
-    .btn-limpar {
-      width: 100%;
-      padding: 10px;
-      background: transparent;
-      color: #e53935;
-      border: 1px solid #e53935;
-      border-radius: 10px;
-      font-size: 14px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-    .btn-limpar:hover { background: #fdecea; }
-    .log {
-      margin-top: 24px;
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 16px;
-      max-height: 200px;
-      overflow-y: auto;
-      font-size: 13px;
-      display: none;
-    }
-    .log .item { padding: 4px 0; border-bottom: 1px solid #eee; }
-    .log .item.ok { color: #2e7d32; }
-    .log .item.err { color: #c62828; }
-    .log .item.info { color: #555; }
-    .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin-top: 16px; display: none; }
-    .progress-bar-inner { height: 100%; background: #1a73e8; border-radius: 4px; width: 0%; transition: width 0.3s; }
-    .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #999; letter-spacing: 0.5px; margin-bottom: 12px; }
-    hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
-  </style>
-</head>
-<body>
-<div class="container">
-  <h1>📲 Disparo de SMS em Massa</h1>
-  <p class="subtitle">Envie a mesma mensagem para até 1.200 contatos de uma vez.</p>
+  <base href="/">
 
-  <hr/>
-  <div class="section-title">🔑 Credenciais Twilio</div>
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Zapia AI Personal Assistant">
 
-  <label>Account SID</label>
-  <input type="text" id="accountSid" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+  <!--
+    One-time cache recovery.
 
-  <label>Auth Token</label>
-  <input type="password" id="authToken" placeholder="Seu Auth Token" />
+    Users upgrading across the 1.15 / 1.17 boundary can end up with a stale
+    Flutter service worker, HTTP-cached main.dart.js, or an old CanvasKit
+    build, producing Crashlytics#recordError MissingPluginException and
+    "s.addOval is not a function" errors. Unregistering the SW and clearing
+    Cache Storage does not evict the browser's separate HTTP cache for
+    same-origin script URLs; we force-reload those entry files before
+    location.reload().
 
-  <label>Número Twilio (com DDI)</label>
-  <input type="text" id="fromNumber" placeholder="Ex: +15551234567" />
+    If localStorage is unreadable (throws), we still run unregister / clear /
+    refetch — only skip when getItem returns a truthy marker.
 
-  <hr/>
-  <div class="section-title">📋 Contatos</div>
-
-  <label>Cole os números aqui (um por linha, com DDI)</label>
-  <textarea class="numeros-box" id="numeros" placeholder="+5511999999999&#10;+5521888888888&#10;+5531777777777"></textarea>
-  <div class="info">Formato: +DDI + DDD + número. Ex: +5511999999999</div>
-  <div class="contador" id="contador">0 número(s) detectado(s)</div>
-  <button class="btn-limpar" onclick="limparNumeros()">🗑️ Limpar lista</button>
-
-  <hr/>
-  <div class="section-title">✉️ Mensagem</div>
-
-  <label>Mensagem a enviar</label>
-  <textarea id="mensagem" placeholder="Digite sua mensagem aqui..."></textarea>
-  <div class="info" id="charCount">0 / 160 caracteres</div>
-
-  <button class="btn" id="btnEnviar" onclick="enviarSMS()">🚀 Enviar para todos</button>
-
-  <div class="progress-bar" id="progressBar">
-    <div class="progress-bar-inner" id="progressBarInner"></div>
-  </div>
-
-  <div class="log" id="log"></div>
-</div>
-
-<script>
-  document.getElementById('numeros').addEventListener('input', atualizarContador);
-  document.getElementById('mensagem').addEventListener('input', function() {
-    document.getElementById('charCount').textContent = this.value.length + ' / 160 caracteres';
-  });
-
-  function atualizarContador() {
-    const nums = getNumeros();
-    document.getElementById('contador').textContent = nums.length + ' número(s) detectado(s)';
-  }
-
-  function getNumeros() {
-    return document.getElementById('numeros').value
-      .split('\n')
-      .map(n => n.trim())
-      .filter(n => n.length > 7);
-  }
-
-  function limparNumeros() {
-    document.getElementById('numeros').value = '';
-    atualizarContador();
-  }
-
-  function log(msg, tipo) {
-    tipo = tipo || 'info';
-    const logDiv = document.getElementById('log');
-    logDiv.style.display = 'block';
-    const item = document.createElement('div');
-    item.className = 'item ' + tipo;
-    item.textContent = msg;
-    logDiv.appendChild(item);
-    logDiv.scrollTop = logDiv.scrollHeight;
-  }
-
-  async function enviarSMS() {
-    const accountSid = document.getElementById('accountSid').value.trim();
-    const authToken = document.getElementById('authToken').value.trim();
-    const fromNumber = document.getElementById('fromNumber').value.trim();
-    const mensagem = document.getElementById('mensagem').value.trim();
-    const numeros = getNumeros();
-
-    if (!accountSid || !authToken || !fromNumber) {
-      alert('Preencha as credenciais da Twilio!');
-      return;
-    }
-    if (numeros.length === 0) {
-      alert('Adicione pelo menos um número!');
-      return;
-    }
-    if (!mensagem) {
-      alert('Digite uma mensagem!');
-      return;
-    }
-
-    const btn = document.getElementById('btnEnviar');
-    btn.disabled = true;
-    btn.textContent = '⏳ Enviando...';
-
-    const progressBar = document.getElementById('progressBar');
-    const progressBarInner = document.getElementById('progressBarInner');
-    progressBar.style.display = 'block';
-
-    document.getElementById('log').innerHTML = '';
-    log('Iniciando envio para ' + numeros.length + ' contato(s)...', 'info');
-
-    let enviados = 0;
-    let erros = 0;
-
-    for (let i = 0; i < numeros.length; i++) {
-      const numero = numeros[i];
+    On first visit after this ships: unregister service workers, wipe Cache
+    Storage, replace HTTP-cached entry bundles, then reload once. Bump the
+    localStorage key (v3 -> v4 -> ...) if a future deploy needs another pass.
+  -->
+  <script>
+    (function () {
+      var key = 'zapia_cache_flushed_v7';
       try {
-        const response = await fetch(
-          'https://api.twilio.com/2010-04-01/Accounts/' + accountSid + '/Messages.json',
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Basic ' + btoa(accountSid + ':' + authToken),
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-              From: fromNumber,
-              To: numero,
-              Body: mensagem
-            })
-          }
-        );
-        const data = await response.json();
-        if (response.ok) {
-          enviados++;
-          log('✅ ' + numero + ' — enviado', 'ok');
-        } else {
-          erros++;
-          log('❌ ' + numero + ' — erro: ' + data.message, 'err');
-        }
-      } catch (e) {
-        erros++;
-        log('❌ ' + numero + ' — falha de conexão', 'err');
+        if (localStorage.getItem(key)) return;
+      } catch (_) {}
+
+      var hasServiceWorker = 'serviceWorker' in navigator;
+      var hasCacheStorage = typeof caches !== 'undefined';
+      var hasFetch = typeof fetch === 'function';
+      if (!hasServiceWorker && !hasCacheStorage) {
+        try { localStorage.setItem(key, '1'); } catch (_) {}
+        return;
       }
 
-      const pct = Math.round(((i + 1) / numeros.length) * 100);
-      progressBarInner.style.width = pct + '%';
+      var unregisterAll = hasServiceWorker
+        ? navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            return Promise.all(registrations.map(function (registration) {
+              return registration.unregister();
+            }));
+          }).catch(function () {})
+        : Promise.resolve();
 
-      await new Promise(function(r) { setTimeout(r, 300); });
+      var clearCaches = hasCacheStorage
+        ? caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (name) {
+              return caches.delete(name);
+            }));
+          }).catch(function () {})
+        : Promise.resolve();
+
+      // Bust the browser HTTP cache for fixed-name entry files (independent of SW / caches API).
+      var pathsToHardReload = [
+        'flutter.js',
+        'flutter_bootstrap.js',
+        'main.dart.js',
+        'main.dart.mjs',
+        'main.dart.wasm',
+        'flutter_service_worker.js',
+        'version.json',
+        'manifest.json',
+        'assets/AssetManifest.json',
+        'assets/AssetManifest.bin.json',
+        'assets/FontManifest.json',
+      ];
+      var refetchEntryBundles = hasFetch
+        ? Promise.all(
+            pathsToHardReload.map(function (p) {
+              var url;
+              try {
+                url = new URL(p, document.baseURI).href;
+              } catch (e) {
+                return Promise.resolve();
+              }
+              return fetch(url, { cache: 'reload', mode: 'same-origin' }).catch(function () {});
+            })
+          )
+        : Promise.resolve();
+
+      Promise.all([unregisterAll, clearCaches, refetchEntryBundles]).then(function () {
+        try { localStorage.setItem(key, '1'); } catch (_) {}
+        location.reload();
+      });
+    })();
+  </script>
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Zapia">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <!-- Preload splash assets -->
+  <link rel="preload" href="icons/Icon-512.png" as="image" type="image/png">
+  <link rel="preload" href="flutter.js" as="script">
+
+  <title>Zapia</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="app.css">
+
+  <!-- Google Identity Services (for OAuth code flow / server auth code on web) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Tell the browser to fetch flutter.js as soon as possible -->
+  <script src="flutter.js" defer type="text/javascript"></script>
+
+  <!--
+    flutter_build_config: inline because Flutter's build tool replaces this
+    placeholder with build-specific bootstrap data at `flutter build web` time.
+    Its SHA-256 hash is computed from build/web/index.html and injected into
+    nginx.conf by scripts/compute-csp-hashes.py during CI.
+  -->
+  <script>
+    if (!window._flutter) {
+  window._flutter = {};
+}
+_flutter.buildConfig = {"engineRevision":"59aa584fdf100e6c78c785d8a5b565d1de4b48ab","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
+
+  </script>
+
+  <!-- Amplitude — queuing stub loaded from same origin, SDK loaded async from CDN -->
+  <script src="amplitude-init.js" defer></script>
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #000000;
     }
 
-    log('Concluído: ' + enviados + ' enviados, ' + erros + ' erros.', 'info');
-    btn.disabled = false;
-    btn.textContent = '🚀 Enviar para todos';
-  }
-</script>
+    #splash {
+      position: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      background-color: #000000;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .splash-logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .splash-icon {
+      width: 128px;
+      height: 128px;
+      border-radius: 22px;
+      animation: splashPulse 2s ease-in-out infinite;
+    }
+
+    .splash-loading-text {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 0.5px;
+      text-align: center;
+      transition: opacity 0.4s ease;
+    }
+
+    .progress-bar-container {
+      width: 160px;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: rgba(34, 189, 171, 0.8);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+
+    @keyframes splashPulse {
+      0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(34, 189, 171, 0.3));
+        transform: scale(1);
+      }
+      50% {
+        filter: drop-shadow(0 0 20px rgba(34, 189, 171, 0.5));
+        transform: scale(1.03);
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <div id="splash">
+    <div class="splash-logo-container">
+      <img class="splash-icon" src="icons/Icon-512.png" alt="Zapia">
+      <div class="splash-loading-text" id="splash-text">Loading...</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    Flutter loader: inline because Flutter's build tool replaces
+    "3361190339" /* Flutter's service worker is deprecated and will be removed in a future Flutter release. */ at build time.
+    Its SHA-256 hash is computed from build/web/index.html and injected into
+    nginx.conf by scripts/compute-csp-hashes.py during CI.
+  -->
+  <script defer>
+    window.addEventListener('load', function(ev) {
+      const splash = document.getElementById('splash');
+
+      // Animate progress bar with non-linear increments (slows down near 90%)
+      const progressBar = document.getElementById('progressBar');
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        if (progress < 90) {
+          progress += (90 - progress) * 0.04;
+          progressBar.style.width = progress + '%';
+        }
+      }, 100);
+
+      // Rotate loading text in sync with the logo pulse animation.
+      // Uses transitionend to avoid hardcoding the CSS transition duration.
+      const splashTexts = ['Loading...', 'Cargando...', 'Carregando...'];
+      let splashTextIndex = 0;
+      const splashTextEl = document.getElementById('splash-text');
+      const splashIcon = document.querySelector('.splash-icon');
+      const handleIteration = () => {
+        splashTextEl.style.opacity = '0';
+        splashTextEl.addEventListener('transitionend', function onFadeOut() {
+          splashTextEl.removeEventListener('transitionend', onFadeOut);
+          splashTextIndex = (splashTextIndex + 1) % splashTexts.length;
+          splashTextEl.textContent = splashTexts[splashTextIndex];
+          splashTextEl.style.opacity = '1';
+        }, { once: true });
+      };
+      splashIcon.addEventListener('animationiteration', handleIteration);
+
+      _flutter.loader.load({
+        serviceWorker: {
+          serviceWorkerVersion: "3361190339" /* Flutter's service worker is deprecated and will be removed in a future Flutter release. */,
+        },
+        onEntrypointLoaded: async function(engineInitializer) {
+          const appRunner = await engineInitializer.initializeEngine({
+            useColorEmoji: true,
+          });
+          await appRunner.runApp();
+          // Double-RAF: first schedules Flutter's paint, second fires after
+          // the browser has composited that frame — avoids blank flash.
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            splashIcon.removeEventListener('animationiteration', handleIteration);
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            splash.style.opacity = '0';
+            splash.addEventListener('transitionend', function() {
+              splash.style.display = 'none';
+            });
+          }));
+        },
+      });
+    });
+  </script>
+
+  <!-- Firebase Messaging service worker -->
+  <script src="sw-register.js" defer></script>
+
+  <!-- PDFX
+       SRI hash covers pdf.min.mjs at this exact version.
+       pdf.worker.mjs is loaded dynamically via GlobalWorkerOptions.workerSrc —
+       SRI cannot be applied there; it is constrained by worker-src in nginx.conf. -->
+  <script
+    src='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.mjs'
+    integrity='sha384-DGfXL3Vw9YhOEK33FiDLr/Mu/Dbg18E0QJqJ5XUrkQrDPBohqNH4DSIVWD2KC45I'
+    crossorigin='anonymous'
+    type='module'></script>
+  <script src='pdfx-config.js' type='module'></script>
+
 </body>
 </html>
