@@ -2,31 +2,20 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OK NEWS DIGITAL - YouTube Downloader</title>
+    <title>OK NEWS DIGITAL</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000; }
-        iframe { width: 100%; height: 100%; border: none; }
-        #btn-download {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #ff0000; color: white; padding: 15px 25px;
-            border-radius: 50px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 9999;
+        body, html { margin: 0; padding: 0; height: 100%; }
+        #navegador { width: 100%; height: 100%; border: none; }
+        .btn-fixo {
+            position: fixed; bottom: 10px; left: 10px;
+            background: #ff0000; color: white; padding: 10px 20px;
+            border-radius: 20px; z-index: 1000; font-weight: bold;
         }
     </style>
 </head>
 <body>
-
-    <iframe id="yt-frame" src="https://m.youtube.com"></iframe>
-
-    <div id="btn-download" onclick="baixarVideo()">BAIXAR VÍDEO</div>
-
-    <script>
-        function baixarVideo() {
-            const urlAtual = window.location.href; // Captura o link do vídeo
-            const linkDownload = "https://snapsave.io/pt1/search?url=" + encodeURIComponent(window.frames[0].location.href);
-            window.open(linkDownload, '_blank');
-        }
-    </script>
+    <iframe id="navegador" src="https://m.youtube.com"></iframe>
+    
+    <a href="https://snapsave.io/pt1" class="btn-fixo" target="_blank">BAIXAR VÍDEO</a>
 </body>
 </html>
