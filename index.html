@@ -2,20 +2,23 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OK NEWS DIGITAL</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; }
-        #navegador { width: 100%; height: 100%; border: none; }
-        .btn-fixo {
-            position: fixed; bottom: 10px; left: 10px;
-            background: #ff0000; color: white; padding: 10px 20px;
-            border-radius: 20px; z-index: 1000; font-weight: bold;
-        }
+        body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
+        .btn-yt { background: #ff0000; color: white; padding: 20px; display: block; border-radius: 10px; text-decoration: none; font-weight: bold; margin-bottom: 20px; }
+        .btn-down { background: #28a745; color: white; padding: 20px; display: block; border-radius: 10px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-    <iframe id="navegador" src="https://m.youtube.com"></iframe>
+    <h1>OK NEWS DIGITAL</h1>
+    <p>Escolha o que deseja fazer:</p>
     
-    <a href="https://snapsave.io/pt1" class="btn-fixo" target="_blank">BAIXAR VÍDEO</a>
+    <a href="https://m.youtube.com" target="_blank" class="btn-yt">ABRIR YOUTUBE</a>
+    <a href="https://snapsave.io/pt1" target="_blank" class="btn-down">BAIXAR VÍDEO (Cole o link lá)</a>
+    
+    <p style="font-size: 12px; margin-top: 30px;">
+        Dica: Copie o link do vídeo no YouTube e volte aqui para baixar.
+    </p>
 </body>
 </html>
