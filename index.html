@@ -5,68 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OK NEWS DIGITAL | Pro</title>
     <style>
-        :root { --cor-primaria: #00e676; --cor-fundo: #0f0f0f; --cor-card: #1a1a1a; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--cor-fundo); color: white; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
-        
-        .header { width: 100%; padding: 20px; text-align: center; background: #000; border-bottom: 2px solid var(--cor-primaria); }
-        .container { width: 90%; max-width: 450px; margin-top: 20px; }
-        
-        .card { background: var(--cor-card); padding: 20px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); text-align: center; }
-        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 10px; border: 1px solid #333; background: #262626; color: white; box-sizing: border-box; }
-        
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.3s; }
-        .btn-green { background: var(--cor-primaria); color: black; }
-        .btn-red { background: #ff0000; color: white; }
-        
-        #resultado { margin-top: 20px; padding: 15px; background: #000; border-radius: 10px; color: var(--cor-primaria); word-break: break-all; font-weight: bold; }
+        body { font-family: sans-serif; background: #0f0f0f; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: #1a1a1a; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #333; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 10px; border: none; background: #262626; color: white; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; background: #00e676; color: black; }
+        .btn-red { background: #ff0000; color: white; margin-top: 10px; text-decoration: none; display: block; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2 style="margin:0;">OK NEWS DIGITAL</h2>
-    </div>
+    <div class="card">
+        <h2>OK NEWS DIGITAL</h2>
+        <p>Encurtador Profissional</p>
+        
+        <input type="text" id="linkInput" placeholder="Cole seu link longo aqui...">
+        <button class="btn" onclick="gerarLink()">ENcurtar e Ganhar</button>
+        
+        <div id="resultado" style="margin-top: 20px;"></div>
 
-    <div class="container">
-        <div class="card">
-            <h3>Gerador de Links Pro</h3>
-            <p style="font-size: 0.9rem; color: #888;">Cole o link abaixo e gere sua receita:</p>
-            
-            <input type="text" id="linkInput" placeholder="Ex: https://youtube.com/...">
-            <button class="btn btn-green" onclick="encurtarLink()">ENcurtar e Ganhar</button>
-            
-            <div id="resultado">Seu link aparecerá aqui.</div>
-        </div>
-
-        <div class="card" style="margin-top: 20px;">
-            <h3>Apoie o Canal</h3>
-            <a href="https://www.youtube.com/@OKNEWSDIGITAL?sub_confirmation=1" target="_blank" class="btn btn-red">Inscrever-se no Canal</a>
-        </div>
+        <a href="https://www.youtube.com/@OKNEWSDIGITAL?sub_confirmation=1" target="_blank" class="btn btn-red">Inscrever-se no Canal</a>
     </div>
 
     <script>
-        function encurtarLink() {
+        function gerarLink() {
             const url = document.getElementById('linkInput').value;
-            const token = "SEU_API_TOKEN"; // <--- COLE SEU TOKEN AQUI
+            const token = "SEU_API_TOKEN"; // <--- COLOQUE O SEU TOKEN AQUI
             
-            if(!url) { alert("Cole um link válido!"); return; }
+            if(!url) { alert("Cole um link!"); return; }
 
-            const api = https://shrinkme.io/api?api=${token}&url=${encodeURIComponent(url)};
+            // Usando o método de redirecionamento via URL da API, que é mais estável
+            const urlFinal = https://shrinkme.io/api?api=${token}&url=${encodeURIComponent(url)};
             
-            document.getElementById('resultado').innerHTML = "Gerando...";
-
-            fetch(api)
-                .then(res => res.json())
-                .then(data => {
-                    if(data.shortenedUrl) {
-                        document.getElementById('resultado').innerHTML = "Link Gerado:<br>" + data.shortenedUrl;
-                    } else {
-                        document.getElementById('resultado').innerHTML = "Erro ao gerar. Verifique o seu API Token.";
-                    }
-                })
-                .catch(() => {
-                    document.getElementById('resultado').innerHTML = "Erro de conexão. Tente novamente.";
-                });
+            // Em vez de processar no fundo, abrimos o link da API que já retorna o resultado
+            window.open(urlFinal, '_blank');
+            document.getElementById('resultado').innerHTML = "O seu link monetizado foi gerado numa nova janela!";
         }
     </script>
 </body>
